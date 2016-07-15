@@ -1,6 +1,6 @@
 /** \file  EmbedInitial.h
 \brief C++ header file initializing embedding map X.
-Copyright 2016 by Tomas Kojar
+Copyright 2016 by Andrew Colinet,Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
