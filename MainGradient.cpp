@@ -67,7 +67,7 @@ int main() {
 
 	std::cout << "line 39 "<<'\n';
 	//Initializing DTI data
-	std::ifstream mydtifile("DTIdataset3.csv");
+	std::ifstream mydtifile("DTI4Ddataset.csv");
 
 	std::vector< std::vector<std::vector<std::vector<double>>> > Aatten(nuframesx, std::vector<std::vector<std::vector<double> > >(nuframesy, std::vector<std::vector<double>>(nuframesz, std::vector<double >(xGraddirections))));
 	CSVinto4Darray(mydtifile, nuframesx, nuframesy, nuframesz, xGraddirections, Aatten);
