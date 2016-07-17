@@ -1,6 +1,6 @@
 /** \file  Volfnminmax.h
 C++ header file initializing the fmin and fmax of the free water volume fraction.
-Copyright 2016 by Andrew Colinet,Tomas Kojar
+Copyright 2016 by Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -31,20 +31,20 @@ std::vector< std::vector<std::vector<std::vector<double>>> >  Volfnminmax(std::o
 	double Awater = Eli.Awater;
 	double lmin = Eli.lmin;
 	double lmax = Eli.lmax;
-	int nuframesx=Eli.nuframesx;
-	int nuframesy= Eli.nuframesy;
-	int nuframesz= Eli.nuframesz;
-	int Graddirections=Eli.Graddirections;
+	int nuframesx=Eli.nframesx;
+	int nuframesy= Eli.nframesy;
+	int nuframesz= Eli.nframesz;
+	int Graddirections=Eli.GradDirections;
 
 	std::vector< std::vector<std::vector<std::vector<double>>> > result(2,std::vector<std::vector<std::vector<double>>>(nuframesx, std::vector<std::vector<double>>(nuframesy, std::vector<double >(nuframesz))));
 	
 
 
-	for (int x = 0; x != Eli.nuframesx; ++x) {
+	for (int x = 0; x != Eli.nframesx; ++x) {
 
-		for (int y = 0; y != Eli.nuframesy; ++y) {
+		for (int y = 0; y != Eli.nframesy; ++y) {
 
-			for (int z = 0; z != Eli.nuframesz; ++z) {
+			for (int z = 0; z != Eli.nframesz; ++z) {
 				
 				//Computing minimum and maximum of Ahat for fixed x,y,z
 				maxAhat = 0;

@@ -1,6 +1,6 @@
 /** \file   Volumefraction.h
 C++ header file initializing the free water volume fraction.
-Copyright 2016 by Andrew Colinet,Tomas Kojar
+Copyright 2016 by Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -25,10 +25,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "ELInitialization.h"
 std::vector<std::vector<std::vector<double>>>  volumefraction(std::ofstream& myfile, std::vector< std::vector<std::vector<std::vector<double>>> > Aatten, ELInitialization Eli, std::vector<std::vector<std::vector<double>>> fmin, std::vector<std::vector<std::vector<double>>> fmax) {
 	
-	int nuframesx = Eli.nuframesx;
-	int nuframesy = Eli.nuframesy;
-	int nuframesz = Eli.nuframesz;
-	int Graddirections = Eli.Graddirections;
+	int nuframesx = Eli.nframesx;
+	int nuframesy = Eli.nframesy;
+	int nuframesz = Eli.nframesz;
+	int Graddirections = Eli.GradDirections;
 	std::vector<int> WM = Eli.WM;
 	std::vector<int> WTR = Eli.WTR;
 	

@@ -156,7 +156,6 @@
     <ClInclude Include="ELTensors.h" />
     <ClInclude Include="EmbedInitial.h" />
     <ClInclude Include="maxmintensor.h" />
-    <ClInclude Include="MeanofTensor.h" />
     <ClInclude Include="Volfnminmax.h" />
     <ClInclude Include="Volumefraction.h" />
   </ItemGroup>

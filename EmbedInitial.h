@@ -20,7 +20,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 */
-#include "ELTensors.h"
+
+
 #include "ELInitialization.h"
 #include <Eigen/Dense>
 
@@ -28,17 +29,13 @@ using namespace std;
 using namespace Eigen;
 
 void Embedinitial(std::ofstream& myfile, std::vector<std::vector<double>> DiffGradDir, std::vector< std::vector<std::vector<std::vector<double>>> > Ahat, ELInitialization Eli, std::vector<std::vector<std::vector<double>>> volfn, std::vector< std::vector<std::vector<std::vector<double>>> > &embeddingmapXn){
-
-	int bval = Eli.bval;
-	double  Awater = Eli.Awater;
-	int nuframesx = Eli.nuframesx;
-	int nuframesy = Eli.nuframesy;
-	int nuframesz = Eli.nuframesz;
-	int Graddirections = Eli.Graddirections;
+		
+	
 	double Abitensor = 0;
 
-	 embeddingmapXn.resize(9, std::vector<std::vector<std::vector<double> > >(nuframesx, std::vector<std::vector<double>>(nuframesy, std::vector<double >(nuframesz))));
-	////To use Least squares we express the 3x3 Diffusion matrix for fixed x,y,z  as a 6-size vector (6 due to its symmetry)
+	 embeddingmapXn.resize(9, std::vector<std::vector<std::vector<double> > >(Eli.nframesx, std::vector<std::vector<double>>(Eli.nframesy, std::vector<double >(Eli.nframesz))));
+	
+	 ////To use Least squares we express the 3x3 Diffusion matrix D for fixed x,y,z  as a 6-size vector (onlny 6 terms due to D's symmetry)
 	
 	////So DiffusionTensor={ DiffTenvec[0], DiffTenvec[1], DiffTenvec[2] ;  
 	////					   DiffTenvec[1], DiffTenvec[3], DiffTenvec[4];
@@ -46,39 +43,40 @@ void Embedinitial(std::ofstream& myfile, std::vector<std::vector<double>> DiffGr
 
 
 
-	//std::vector<std::vector<double>> Mcoeff(Graddirections, std::vector<double>(6));
-	MatrixXf Mcoeff(Graddirections,6);
-	VectorXf Ytiss(Graddirections);
+	//std::vector<std::vector<double>> Mcoeff(Eli.GradDirections, std::vector<double>(6));
+	MatrixXf Mcoeff(Eli.GradDirections,6);
+	VectorXf Ytiss(Eli.GradDirections);
 
-	for (int x = 0; x != nuframesx; x++) {
-		for (int y = 0; y != nuframesy; y++) {
-			for (int z = 0; z != nuframesz; z++) {
+	for (int x = 0; x != Eli.nframesx; x++) {
+		for (int y = 0; y != Eli.nframesy; y++) {
+			for (int z = 0; z != Eli.nframesz; z++) {
 
-				
-
-				for (int k = 0; k != Graddirections; ++k) {
-					Mcoeff(k,0) = -bval*DiffGradDir[k][0] * DiffGradDir[k][0];
-					Mcoeff(k,1) = -2 * bval * DiffGradDir[k][0] * DiffGradDir[k][1];
-					Mcoeff(k,2) = -2 * bval * DiffGradDir[k][0] * DiffGradDir[k][2];
-					Mcoeff(k,3) = -bval * DiffGradDir[k][1] * DiffGradDir[k][1];
-					Mcoeff(k,4) = -2 * bval * DiffGradDir[k][1] * DiffGradDir[k][2];
-					Mcoeff(k,5) = -2 * bval * DiffGradDir[k][2] * DiffGradDir[k][2];
+				for (int k = 0; k != Eli.GradDirections; ++k) {
+					Mcoeff(k,0) = -Eli.bval*DiffGradDir[k][0] * DiffGradDir[k][0];
+					Mcoeff(k,1) = -2 * Eli.bval * DiffGradDir[k][0] * DiffGradDir[k][1];
+					Mcoeff(k,2) = -2 * Eli.bval * DiffGradDir[k][0] * DiffGradDir[k][2];
+					Mcoeff(k,3) = -Eli.bval * DiffGradDir[k][1] * DiffGradDir[k][1];
+					Mcoeff(k,4) = -2 * Eli.bval * DiffGradDir[k][1] * DiffGradDir[k][2];
+					Mcoeff(k,5) = -2 * Eli.bval * DiffGradDir[k][2] * DiffGradDir[k][2];
 					//myfile << '\n'<<"Mcoeff " << Mcoeff(k, 0) << ',' << Mcoeff(k, 1) << ',' << Mcoeff(k, 2) << ',' << Mcoeff(k, 3) << ',' << Mcoeff(k, 4) << ',' << Mcoeff(k, 5);
-					Abitensor = (Ahat[x][y][z][k] - (1 - volfn[x][y][z])*Awater) /( volfn[x][y][z]+0.000001);
+					Abitensor = (Ahat[x][y][z][k] - (1 - volfn[x][y][z])*Eli.Awater) /( volfn[x][y][z]+0.000001);
 
 					Ytiss(k) = log(Abitensor+0.00000000001);
 					//myfile << '\n' << ','<<"xyzk"<<','<<x<<y<<z<<k <<','<<"Ytiss" << ','<<Ytiss(k)<<',' << "volfn"<<','<< volfn[x][y][z] << ','<<"Ahat"<<','<< Ahat[x][y][z][k]<<',';
 				}
 				//std::cout << '\n' << "least squares Mcoeff" << Mcoeff;
 
+
+
 											////Least squares to obtain the diffusion tensor: 
+				
 				//// Mcoeff*DiffTenvec= Ytiss => DiffTenvec=[ Mcoeff]^(-1)*Ytiss
 				
 				VectorXf DiffTenvec =Mcoeff.jacobiSvd(ComputeThinU | ComputeThinV).solve(Ytiss);
 				
-				std::cout << '\n' << "least squares" << DiffTenvec << ',';
+				////std::cout << '\n' << "least squares" << DiffTenvec << ',';
 			
-				myfile <<"least squares" <<DiffTenvec(0) << ',' << DiffTenvec(1) << ',' << DiffTenvec(2)<< DiffTenvec(3)<< ',' << DiffTenvec(4)<< ',' << DiffTenvec(5)<<'\n';
+				////myfile <<"least squares" <<DiffTenvec(0) << ',' << DiffTenvec(1) << ',' << DiffTenvec(2)<< DiffTenvec(3)<< ',' << DiffTenvec(4)<< ',' << DiffTenvec(5)<<'\n';
 
 										////Initializing the embedding map from the Diffusion tensor in Iwasawa coordinates
 
@@ -88,16 +86,22 @@ void Embedinitial(std::ofstream& myfile, std::vector<std::vector<double>> DiffGr
 				embeddingmapXn[2][x][y][z] = z;
 
 				//Fiber bundle components	
-				embeddingmapXn[3][x][y][z] = DiffTenvec(0);   //w1 term 
-				embeddingmapXn[6][x][y][z] = DiffTenvec(1) / DiffTenvec(0);  //w4 term
-				embeddingmapXn[7][x][y][z] = DiffTenvec(2) / DiffTenvec(0);  //w5 term
-				embeddingmapXn[4][x][y][z] = DiffTenvec(3) - embeddingmapXn[3][x][y][z] * embeddingmapXn[6][x][y][z] * embeddingmapXn[6][x][y][z];  //w2 term
-				embeddingmapXn[8][x][y][z] = (DiffTenvec(4) - embeddingmapXn[3][x][y][z] * embeddingmapXn[6][x][y][z] * embeddingmapXn[7][x][y][z]) / embeddingmapXn[4][x][y][z];//w6 term
-				embeddingmapXn[5][x][y][z] = DiffTenvec(5) - embeddingmapXn[3][x][y][z] * embeddingmapXn[7][x][y][z] * embeddingmapXn[7][x][y][z] - embeddingmapXn[4][x][y][z] * embeddingmapXn[8][x][y][z] * embeddingmapXn[8][x][y][z];//w3 term
+				//w1 term 
+				embeddingmapXn[3][x][y][z] = DiffTenvec(0);  
+				//w4 term
+				embeddingmapXn[6][x][y][z] = DiffTenvec(1) / DiffTenvec(0);  
+				//w5 term
+				embeddingmapXn[7][x][y][z] = DiffTenvec(2) / DiffTenvec(0);  
+				//w2 term
+				embeddingmapXn[4][x][y][z] = DiffTenvec(3) - embeddingmapXn[3][x][y][z] * embeddingmapXn[6][x][y][z] * embeddingmapXn[6][x][y][z];  
+				//w6 term
+				embeddingmapXn[8][x][y][z] = (DiffTenvec(4) - embeddingmapXn[3][x][y][z] * embeddingmapXn[6][x][y][z] * embeddingmapXn[7][x][y][z]) / embeddingmapXn[4][x][y][z];
+				//w3 term
+				embeddingmapXn[5][x][y][z] = DiffTenvec(5) - embeddingmapXn[3][x][y][z] * embeddingmapXn[7][x][y][z] * embeddingmapXn[7][x][y][z] - embeddingmapXn[4][x][y][z] * embeddingmapXn[8][x][y][z] * embeddingmapXn[8][x][y][z];
 
-				//std::cout << "embeddingmapXn " << embeddingmapXn[8][x][y][z] << '\n';
-				
-		//	myfile <<"embeddingmapXns: " <<embeddingmapXn[3][x][y][z] << ',' << embeddingmapXn[4][x][y][z] << ',' << embeddingmapXn[5][x][y][z] << ',' << embeddingmapXn[6][x][y][z] << ',' << embeddingmapXn[7][x][y][z] << ',' << embeddingmapXn[8][x][y][z] << '\n';
+
+	//std::cout << "embeddingmapXn " << embeddingmapXn[8][x][y][z] << '\n';
+	//	myfile <<"embeddingmapXns: " <<embeddingmapXn[3][x][y][z] << ',' << embeddingmapXn[4][x][y][z] << ',' << embeddingmapXn[5][x][y][z] << ',' << embeddingmapXn[6][x][y][z] << ',' << embeddingmapXn[7][x][y][z] << ',' << embeddingmapXn[8][x][y][z] << '\n';
 				
 			}
 		}

@@ -1,6 +1,6 @@
 /** \file  CSVintomatrix.h
 \brief C++ source file initializing matrices from csv.
-Copyright 2016 by Andrew Colinet, Tomas Kojar
+Copyright 2016 by Andrew Colinet,Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -25,10 +25,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
 #include <string>
 
-std::vector<std::vector<double>> CSVintoMatrix(std::ifstream& file, const int Graddirections, const int colsize = 3) {
+std::vector<std::vector<double>> CSVintoMatrix(std::ifstream& file, const int Graddirections, std::vector<std::vector<double>> &data, const int colsize = 3) {
 
-	std::vector<std::vector<double>> data;
-
+	
 
 	for (std::string line; std::getline(file, line); )
 		//for (int row = 0; row != Graddirections; row++)
