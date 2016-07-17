@@ -1,6 +1,6 @@
-/** \file  ELTensors.cpp
+/** \file  ELTensors.h
 \brief C++ source file initializing tensors.
-Copyright 2016 by Andrew Colinet,Tomas Kojar
+Copyright 2016 by Andrew Colinet, Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -29,6 +29,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <fstream>
 #include <string>
+
+
 class ELTensors {
 
 private:
@@ -49,7 +51,7 @@ public:
 	std::ofstream& myfile;
 
 	/// Constructor.
-	ELTensors(std::vector<std::vector<std::vector<std::vector<double>>>> xCellX,
+	ELTensors(std::vector<std::vector<std::vector<std::vector<double> > > > xCellX,
 		double xdx,
 		double xdy,
 		double xdz,
@@ -64,65 +66,187 @@ public:
 
 
 
-	//Member Functions
+	////Delete constructor.
+	//~ELTensors();
 
-	//ELTensors
+												////Global variables needed for the EL equation
+
+	double term1 = 0;
+	double bval = Eli.bval;
+	double  Awater = Eli.Awater;
+	double alpha = Eli.alpha;
+	int nuframesx = Eli.nframesx;
+	int nuframesy = Eli.nframesy;
+	int nuframesz = Eli.nframesz;
+	int Graddirections = Eli.GradDirections;
+
+
+													////Global tensors containers needed for the EL equation
+
+
+	////They will be populated by the member functions
+
+
+
+													////Tensors
+	//// Iwasawa coordinates
+	double w1 = CellX[0][0][0][3];
+	double w2 = CellX[0][0][0][4];
+	double w3 = CellX[0][0][0][5];
+	double w4 = CellX[0][0][0][6];
+	double 	w5 = CellX[0][0][0][7];
+	double w6 = CellX[0][0][0][8];
+	
+	///Diffusion tensor	
+	double Diff[3][3] = { { w1, w1*w4, w1*w5 }  ,
+	{ w1*w4, w2 + w1*w4*w4,w1*w4*w5 + w2*w6 },
+	{ w1*w5, w1*w4*w5 + w2*w6, w3 + w1*w5*w5 + w2*w6*w6 } };
+
+
+	////Image metric h_ij
+	std::vector<double> hmatrix ;
+	
+	////Induced Pullback metric gamma
+	std::vector<std::vector<double>> IMmatrix;
+
+
+	////Inverse of Induced Pullback metric gamma
+	std::vector<std::vector<double>> InvIMmatrix;
+	
+	
+	///The exponent (q_k^T) * Diffusion matrix * (q_k)
+	std::vector<double> qDqsum;
+
+	////Christoffel symbols
+	std::vector<std::vector<std::vector<double> > > ChrisSym;
+
+
+
+
+	
+											///Derivatives of tensors
+
+	////Derivative of embedding map X
+	std::vector<std::vector<double>> DerivX;
+
+	////Double Derivative of embedding map X
+	std::vector<std::vector<std::vector<double> > > DDerivX;
+
+
+	///Derivatives of Diffusion tensor
+	double Dx1[3][3] = { { 1, w4, w5 }  ,
+	{ w4, w4*w4, w4*w5 },
+	{ w5, w4*w5, w5*w5 }
+	};
+
+	double Dx2[3][3] = { { 0,0,0 }  ,
+	{ 0,1,w6 },
+	{ 0, w6, w6*w6 } };
+
+	double Dx3[3][3] = { { 0,0,0 }  ,
+	{ 0,0,0 },
+	{ 0,0,1 } };
+
+	double Dx4[3][3] = { { 0, w4, 0 }  ,
+	{ w1, 2 * w1*w4, w1*w5 },
+	{ 0, w1*w5, 0 } };
+
+	double Dx5[3][3] = { { 0,0,1 }  ,
+	{ 0,0,w1*w4 },
+	{ w1, w1*w4, 2 * w1*w5 } };
+
+	double Dx6[3][3] = { { 0,0,0 }  ,
+	{ 0,0, w2 },
+	{ 0, w2, 2 * w2*w6 } };
+
+
+	////Product of derivative of Diffusion tensor with Diffusion direction qk
+	std::vector<std::vector<double>> qpartialDqsum;
+
+	////Derivative of determinant of induced pullback metric gamma
+	double detgamma_constant ;
+
+	double sqrdetgamma = pow((detgamma_constant), -1 / 2);
+
+	////Derivative of induced metric gamma
+	std::vector<std::vector<std::vector<double>>> Derivgamma;
+
+	///Derivative of determinant of induced metric
+	std::vector<double> derivdetgamma;
+	
+	////Derivative of inverse induced metric gamma
+	std::vector<std::vector<double> > DerivIIM;
+
+
+
+
+
+												/////Member Functions
+
+													//ELTensors
 
 	//Embedded metric h_ij
-	const std::vector<double> hmatrix();
+	void hmatrixfunc(std::vector<double> &xhmatrix);   
 
 	//Diffusion tensor product with diffusion direction q: qDq
-	const double qDq(std::vector<double> qk);
+	void qDqfunc(std::vector<double> &xqDqsum);
+
+	///entries of pullback metric gamma
+	void IMmatrixfunc(std::vector<std::vector<double> > &ximmatrix);
 
 
-	//Gamma^i_{j,k}=1/2 h^(il)[partial_{j}h_{lk}+ partial_{k}h_{jl}-partial_{l}h_{jk}]
-	const double CSIComp(double i, double j, double k) const;
-
-	//entries of gamma
-	const std::vector<std::vector<double>> IMmatrix();
-
-	//determinant gamma
-	const double detgamma();
-
-	//Induced metric gamma_nu,mu
-	const std::vector<std::vector<double>> IIMComp();
+	////Induced Pullback metric gamma
+	void detgammafunc(double &xdetgamma_constant);
 
 
-	//Tensor derivatives
+	////Inverse of Induced metric gamma_nu,mu
+	void IIMmatrixfunc(std::vector<std::vector<double> > &xinvimmatrix);
 
-	//Derivative of embedding map X
-	const std::vector<std::vector<double>> DerivX();
-
-	//Second derivative of embedding map X
-	const std::vector<std::vector<std::vector<double>>> DDerivX();
-
-	//Derivative of induced metric gamma
-	const std::vector<std::vector<std::vector<double>>> Derivgamma();
-
-	//Deriv determinant gamma
-	const double Derivdetgamma(double direction);
+	///Christoffel Symbols
+	void CSIComp(std::vector<std::vector<std::vector<double> > > &ChrisSym);
 
 
-	//Derivative of inverse induced metric gamma_nu,mu
-	const std::vector<std::vector<double>> DerivIIMComp();
 
-	//Product of Derivative of Diffusion tensor D with kth diffusion direction q_k: (q_k^T) partialD (q_k)
-	const double qpartialDq(double direction, std::vector<double> qk);
+										//ELDerivTensors
+
+		////Derivative of embedding map X
+		void DerivXfunc(std::vector<std::vector<double>> &xDerivX);
+
+		////Double derivative of embedding map X
+		void DDerivXfunc(std::vector<std::vector<std::vector<double> > > &xDDerivX);
 
 
-	//Euler Lagrange equations and Volume fraction
+		////Derivative of induced metric
+		void Derivgammafunc(std::vector<std::vector<std::vector<double>>> &xderivgamma);
 
+		///Derivative of determinant of induced metric
+		void Derivdetgammafunc(std::vector<double> &xderivdetgamma);
+
+		////Derivative of inverse of induced metric; only for the terms needed in the EL equation
+		void DerivIIMComp(std::vector<std::vector<double> > &derivIIM);
+
+
+		/////Product of derivative of Diffusion tensor with Diffusion direction qk
+		void qpartialDqfunc(std::vector<std::vector<double>> &xqpartialDqsum);
+
+
+	
+							////Euler Lagrange equations and Volume fraction
+
+	////Initializing the tensors and their derivatives for the EL equations
+	void TensorsandDerivTensorsInitialization();
+	
 	///Our EL eqns have three terms: 1)The sum involving the diffusion tensors , 
-	const double term1Diff(double direction);
+	const double term1Diff(int direction);
 
 	/// 2)the partial derivatives of induced metric gamma with embedding map X and
-	const double term2IX(double direction);
+	const double term2IX(int direction);
 
 	///3) the term involving the Christoffel symbols.
-	const double term3CS(double direction);
+	const double term3CS(int direction);
 
 	///We will compute them separately and then add them for the EL scheme
-	const double ELequation(double direction);
+	const double ELequation(int direction);
 
 	//The iteration rule for the volume fraction
 	const double VolfraIter();

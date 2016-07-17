@@ -27,9 +27,6 @@
     <ClInclude Include="maxmintensor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeanofTensor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Volumefraction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,10 +39,10 @@
     <ClInclude Include="CSVintoVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Volfnminmax.h">
+    <ClInclude Include="AhatInitializing.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AhatInitializing.h">
+    <ClInclude Include="Volfnminmax.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

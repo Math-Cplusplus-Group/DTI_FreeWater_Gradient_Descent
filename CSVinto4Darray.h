@@ -1,6 +1,6 @@
 /** \file  CSVinto4Darray.h
 \brief C++ header file initializing tensors from csv.
-Copyright 2016 by Andrew Colinet, Tomas Kojar
+Copyright 2016 by Andrew Colinet,Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -25,55 +25,46 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
 #include <string>
 
-std::vector< std::vector<std::vector<std::vector<double>>> > CSVinto4Darray(std::ifstream& file, const int nuframesx, const int nuframesy, const int nuframesz, const int Graddirections) {
+void CSVinto4Darray(std::ifstream& file, const int nuframesx, const int nuframesy, const int nuframesz, const int Graddirections,
+					std::vector< std::vector<std::vector<std::vector<double> > > > &Aatten) {
 
-	std::vector< std::vector<std::vector<std::vector<double> > > > data;
-
+	
+	
 	for (int x = 0; x != nuframesx; ++x) {
 
-		std::vector<std::vector<std::vector<double> > > rowset3;
 		for (int y = 0; y != nuframesy; ++y) {
 
-			std::vector<std::vector<double> > rowset2;
-			for (int row = 0; row != nuframesz; ++row)
+			for (int z = 0; z != nuframesz; ++z)
 			{
 				std::string line;
 				std::getline(file, line);
-				if (!file.good())
+				if ( !file.good() )
 					break;
 
 				std::stringstream iss(line);
-				std::vector<double> rowset;
-				for (int col = 0; col != Graddirections; ++col)
+
+				for (int k = 0; k != Graddirections; ++k)
 				{
 					std::string val;
 					std::getline(iss, val, ',');
 					double s = std::stod(val);
+					
 					//if (!iss.good())
 					//break;
-					rowset.push_back(s);
+					Aatten[x][y][z][k]=s;
+
 					//			std::cout << s << ',';
 					//std::stringstream convertor(val);
-					//convertor >> data[x][y][row][col];
+					//convertor >> Aatten[x][y][z][k];
 
 				}
-				std::cout << '\n';
-				rowset2.push_back(rowset);
-				//std::cout << rowset2[0][2] << '\n';
+				
 
 			}
-			rowset3.push_back(rowset2);
-			//std::cout << rowset3[0][1][1] << '\n';
+		
 		}
-		//	std::cout << '\n';
-		data.push_back(rowset3);
-		//std::cout << data[0][1][1][1]<<'\n';
+		
 	}
-
-	return data;
-
-
-
 }
 
 

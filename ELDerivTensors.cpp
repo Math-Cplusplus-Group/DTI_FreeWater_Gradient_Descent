@@ -21,34 +21,28 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <cmath>
-#include <vector>
 #include "ELTensors.h"
 #include "ELInitialization.h"
 
-
 //Derivative of embedding map X
-const std::vector<std::vector<double> > ELTensors::DerivX() {
+void ELTensors::DerivXfunc(std::vector<std::vector<double>> &xDerivX) {
 
-	std::vector<std::vector<double>> derivX(3, std::vector<double>(9));
-
-	derivX[0][0] = 1; derivX[0][1] = 0; derivX[0][2] = 0;
+	xDerivX.resize(3, std::vector<double>(9));
+	xDerivX[0][0] = 1; xDerivX[0][1] = 0; xDerivX[0][2] = 0;
 	for (int i = 3; i != 9; ++i) {
-		derivX[0][i] = (1 / dx)* (CellX[1][0][0][i] - CellX[0][0][0][i]);
+		xDerivX[0][i] = (1 / dx)* (CellX[1][0][0][i] - CellX[0][0][0][i]);
 	}
 
-	derivX[1][0] = 0; derivX[1][1] = 1; derivX[1][2] = 0;
+	xDerivX[1][0] = 0; xDerivX[1][1] = 1; xDerivX[1][2] = 0;
 	for (int i = 3; i != 9; ++i) {
-		derivX[1][i] = (1 / dx)* (CellX[0][1][0][i] - CellX[0][0][0][i]);
+		xDerivX[1][i] = (1 / dx)* (CellX[0][1][0][i] - CellX[0][0][0][i]);
 	}
 
-	derivX[2][0] = 0; derivX[0][1] = 0; derivX[0][2] = 1;
+	xDerivX[2][0] = 0; xDerivX[0][1] = 0; xDerivX[0][2] = 1;
 	for (int i = 3; i != 9; ++i) {
-		derivX[2][i] = (1 / dx)* (CellX[0][0][1][i] - CellX[0][0][0][i]);
+		xDerivX[2][i] = (1 / dx)* (CellX[0][0][1][i] - CellX[0][0][0][i]);
 	}
-
-
-	return derivX;
+	
 
 }
 
@@ -57,47 +51,26 @@ const std::vector<std::vector<double> > ELTensors::DerivX() {
 
 //Double derivative of embedding map X
 
-const std::vector<std::vector<std::vector<double>>> ELTensors::DDerivX() {
+void ELTensors::DDerivXfunc(std::vector<std::vector<std::vector<double> > > &xDDerivX) {
 
-	std::vector<std::vector<std::vector<double> > > dderiv(9, std::vector<std::vector<double>>(3, std::vector<double>(3)));
+	xDDerivX.resize(9, std::vector<std::vector<double> >(3, std::vector<double>  (3)));
+
+	for (int i = 3; i != 9; ++i) {
+		xDDerivX[i][0][0] = (1 / dx*dx)* (CellX[1][0][0][i] + CellX[2][0][0][i] - 2 * CellX[0][0][0][i]);
 	
-	for (int i = 3; i != 9; ++i) {
-		dderiv[i][0][0] = (1 / dx*dx)* (CellX[1][0][0][i] + CellX[2][0][0][i] - 2 * CellX[0][0][0][i]);
-	}
-
+		xDDerivX[i][1][1] = (1 / dy*dy)* (CellX[0][1][0][i] + CellX[0][2][0][i] - 2 * CellX[0][0][0][i]);
 	
-
-	for (int i = 3; i != 9; ++i) {
-		dderiv[i][1][1] = (1 / dy*dy)* (CellX[0][1][0][i] + CellX[0][2][0][i] - 2 * CellX[0][0][0][i]);
-	}
-
+		xDDerivX[i][2][2] = (1 / dz*dz)* (CellX[0][0][1][i] + CellX[0][0][2][i] - 2 * CellX[0][0][0][i]);
 	
-
-
-
-	for (int i = 3; i != 9; ++i) {
-		dderiv[i][2][2] = (1 / dz*dz)* (CellX[0][0][1][i] + CellX[0][0][2][i] - 2 * CellX[0][0][0][i]);
-	}
-
-
-	for (int i = 3; i != 9; ++i) {
-		dderiv[i][0][1] = (1 / dx*dy)* (CellX[1][1][0][i] - CellX[1][2][0][i] - CellX[2][1][0][i] + CellX[2][2][0][i]);
-		dderiv[i][1][0] = dderiv[i][0][1];
-	}
-
-	for (int i = 3; i != 9; ++i) {
-		dderiv[i][0][2] = (1 / dx*dz)* (CellX[1][0][1][i] - CellX[1][0][2][i] - CellX[2][0][1][i] + CellX[2][0][2][i]);
-		dderiv[i][2][0] = dderiv[i][0][2];
+		xDDerivX[i][0][1] = (1 / dx*dy)* (CellX[1][1][0][i] - CellX[1][2][0][i] - CellX[2][1][0][i] + CellX[2][2][0][i]);
+		xDDerivX[i][1][0] = xDDerivX[i][0][1];
+		xDDerivX[i][0][2] = (1 / dx*dz)* (CellX[1][0][1][i] - CellX[1][0][2][i] - CellX[2][0][1][i] + CellX[2][0][2][i]);
+		xDDerivX[i][2][0] = xDDerivX[i][0][2];
+	
+		xDDerivX[i][1][2] = (1 / dy*dz)* (CellX[0][1][1][i] - CellX[0][2][1][i] - CellX[0][1][2][i] + CellX[0][2][2][i]);
+		xDDerivX[i][2][1] = xDDerivX[i][1][2];
 	}
 	
-	for (int i = 3; i !=9; ++i) {
-		dderiv[i][1][2] = (1 / dy*dz)* (CellX[0][1][1][i] - CellX[0][2][1][i] - CellX[0][1][2][i] + CellX[0][2][2][i]);
-		dderiv[i][2][1] = dderiv[i][1][2];
-	}
-
-
-
-	return dderiv;
 
 }
 
@@ -106,84 +79,68 @@ const std::vector<std::vector<std::vector<double>>> ELTensors::DDerivX() {
 //********************************************************************************************************************************************
 
 //Derivative of induced metric gamma
-const std::vector<std::vector<std::vector<double>>> ELTensors::Derivgamma() {
-
-	std::vector<std::vector<std::vector<double> > > derivgamma(9, std::vector<std::vector<double>>(3, std::vector<double>(3)));
-
-	//the embedding map where we start with X[0]=0 and X[i]=X^i for readability
-	std::vector<double> X(9, 0);
-	for (int i = 0; i !=9; ++i) { X[i] = CellX[0][0][0][i]; }
-
-	//image metric h
-	std::vector<double> h = this->hmatrix();
-
-	//derivative of X: eg. co=0 means partial X /partial x
-	std::vector<std::vector<double> > derivX(3, std::vector<double>(9));
-	for (int co = 0; co != 3; ++co) {
-		for (int i = 0; i != 9; ++i) { derivX[co][i] = (this->DerivX())[co][i]; }
-	}
-
+void ELTensors::Derivgammafunc(std::vector<std::vector<std::vector<double>>> &xDerivgamma) {
 	
+	xDerivgamma.resize(3, std::vector<std::vector<double>>(3, std::vector<double>(3)));
+
+	std::vector<double> derivhmetric;
+
 	for (int coord = 0; coord != 3; ++coord) {
-		//derivative of induced metric
-		std::vector<double> derivhmetric = {
-			0,
-			0,
-			0,
-			-2 * derivX[coord][3] / (X[3] * X[3] * X[3]),
-			-2 * derivX[coord][4] / (X[4] * X[4] * X[4]),
-			-2 * derivX[coord][5] / (X[5] * X[5] * X[5]),
-			2 * (derivX[coord][3] * (X[5] + X[4] * X[8] * X[8])*X[4] * X[5] + X[3] * (derivX[coord][5] + derivX[coord][4] * X[8] * X[8] + 2 * X[4] * X[8] * derivX[coord][8])*X[4] * X[5] - X[3] * (X[5] + X[4] * X[8] * X[8])*(derivX[coord][4] * X[5] + X[4] * derivX[coord][5])) / (X[4] * X[4] * X[5] * X[5]),
-			2 * (derivX[coord][3] * X[5] - X[3] * derivX[coord][5]) / (X[5] * X[5]),
-			2 * (derivX[coord][4] * X[5] - X[4] * derivX[coord][5]) / (X[5] * X[5]),
-			-2 * (derivX[coord][3] * X[8] * X[4] + X[3] * derivX[coord][8] * X[4] - X[4] * X[8] * derivX[coord][4]) / (X[5] * X[5])
-		};
 		
+		//derivative of induced metric
+		derivhmetric = {
+			0,
+			0,
+			0,
+			-2 * DerivX[coord][3] / (w1 * w1 * w1),
+			-2 * DerivX[coord][4] / (w2 * w2 * w2),
+			-2 * DerivX[coord][5] / (w3 * w3 * w3),
+			2 * (DerivX[coord][3] * (w3 + w2 * w6 * w6)*w2 * w3 + w1 * (DerivX[coord][5] + DerivX[coord][4] * w6 * w6 + 2 * w2 * w6 * DerivX[coord][8])*w2 * w3 - w1 * (w3 + w2 * w6 * w6)*(DerivX[coord][4] * w3 + w2 * DerivX[coord][5])) / (w2 * w2 * w3 * w3),
+			2 * (DerivX[coord][3] * w3 - w1 * DerivX[coord][5]) / (w3 * w3),
+			2 * (DerivX[coord][4] * w3 - w2 * DerivX[coord][5]) / (w3 * w3),
+			-2 * (DerivX[coord][3] * w6 * w2 + w1 * DerivX[coord][8] * w2 - w2 * w6 * DerivX[coord][4]) / (w3 * w3)
+		};
+
 
 
 		for (int rowentries = 0; rowentries != 3; ++rowentries) {
 			for (int colentries = 0; colentries != 3; ++colentries) {
-				std::vector<std::vector<std::vector<double>>> dderivX(9, std::vector<std::vector<double>>(3, std::vector<double>(3)));
-				dderivX = this->DDerivX();
-
+				
 				for (int i = 0; i != 9; ++i) {
 
 					//the cross terms
-					derivgamma[coord][rowentries][colentries] =
+					xDerivgamma[coord][rowentries][colentries] =	DDerivX[6][coord][rowentries] * DerivX[colentries][7] * hmatrix[8] + DerivX[rowentries][6] * DDerivX[7][coord][colentries] * hmatrix[8] + DerivX[rowentries][6] * DerivX[colentries][7] * derivhmetric[8] +
 
-						dderivX[6][coord][rowentries] * derivX[colentries][7] * h[8] + derivX[rowentries][6] * dderivX[7][coord][colentries] * h[8] + derivX[rowentries][6] * derivX[colentries][7] * derivhmetric[8] +
-
-						dderivX[7][coord][rowentries] * derivX[colentries][6] * h[8] + derivX[rowentries][7] * dderivX[6][coord][colentries] * h[8] + derivX[rowentries][7] * derivX[colentries][6] * derivhmetric[8];
+					DDerivX[7][coord][rowentries] * DerivX[colentries][6] * hmatrix[8] + DerivX[rowentries][7] * DDerivX[6][coord][colentries] * hmatrix[8] + DerivX[rowentries][7] * DerivX[colentries][6] * derivhmetric[8];
 
 					//summing over the diagonal terms
-					derivgamma[coord][rowentries][colentries] += dderivX[i][coord][rowentries] * derivX[colentries][i ] * h[i] + derivX[rowentries][i ] * dderivX[i][coord][colentries] * h[i] + derivX[rowentries][i] * derivX[colentries][i ] * derivhmetric[i];
+					xDerivgamma[coord][rowentries][colentries] += DDerivX[i][coord][rowentries] * DerivX[colentries][i] * hmatrix[i] + DerivX[rowentries][i] * DDerivX[i][coord][colentries] * hmatrix[i] + DerivX[rowentries][i] * DerivX[colentries][i] * derivhmetric[i];
 				}
 			}
 		}
 
-		//std::cout << "41 ELD coord= " << coord << std::endl;
-
-
+	
 	}
 
-	return derivgamma;
+
 
 }
 
 
 //Derivative of determinant of induced metric gamma
-const double ELTensors::Derivdetgamma(double direction) {
-	double derivdet = 0;
+void ELTensors::Derivdetgammafunc(std::vector<double> &xderivdetgamma) {
 
-	//computing the derivative of the deriminant using Jacobi's formula (detA)'=detA* tr( A^(-1) * (A)' )
+	xderivdetgamma.resize(3);
 
-	for (int i1 = 0; i1 != 3; i1++) {
-		for (int i2 = 0; i2 != 3; i2++)
-		{
-			derivdet += (this->detgamma()) * (this->IIMComp())[i1][i2] * (this->Derivgamma())[direction][i2][i1];
+	//computing the derivative of the deriminant using Jacobi's formula (detA)'=detA* tr( A^(-1) * (A)' )	
+	for (int direction = 0; direction != 3; direction++) {
+		for (int i1 = 0; i1 != 3; i1++) {
+			for (int i2 = 0; i2 != 3; i2++)
+			{
+				xderivdetgamma[direction] += (detgamma_constant)* IMmatrix[i1][i2] * Derivgamma[direction][i2][i1];
+			}
 		}
 	}
-	return derivdet;
 }
 
 
@@ -193,22 +150,21 @@ const double ELTensors::Derivdetgamma(double direction) {
 //*********************************************************************************************************************************
 
 //Derivative of inverse of induced metric gamma_nu,mu
-const std::vector<std::vector<double>> ELTensors::DerivIIMComp() {
+void ELTensors::DerivIIMComp(std::vector<std::vector<double> > &xderivIIM) {
 
-	std::vector<std::vector<double>> derivIIM(3, std::vector<double>(3));
+
+	xderivIIM.resize(3, std::vector<double>(3));
+
 	//computing derivative of inverse using formula (A^-1)'=-(A^-1)* ( (A)' )* (A^-1)
-//	std::cout << "New Message1" << std::endl;
-
-	std::vector<std::vector<std::vector<double> > > derivgamma = (this->Derivgamma());
-	std::cout << "line180 ";
+		
 	for (int coord = 0; coord != 3; ++coord) {
 		for (int nu = 0; nu != 3; ++nu) {
 			for (int i1 = 0; i1 != 3; ++i1) {
 				for (int i2 = 0; i2 != 3; ++i2)
 				{
 
-					std::cout << "line185 " << coord << " " << nu <<  std::endl;
-					derivIIM[coord][nu] -= (this->IIMComp())[coord][i1]*  derivgamma[coord][i1][i2]*(this->IIMComp())[i2][nu];
+					////std::cout << "line185 ELDer" << coord << " " << nu <<  i1<< i2<< std::endl;
+					xderivIIM[coord][nu] -= InvIMmatrix[coord][i1] * Derivgamma[coord][i1][i2] * InvIMmatrix[i2][nu];
 
 				}
 			}
@@ -216,7 +172,7 @@ const std::vector<std::vector<double>> ELTensors::DerivIIMComp() {
 	}
 
 
-	return derivIIM;
+
 
 }
 
@@ -225,128 +181,23 @@ const std::vector<std::vector<double>> ELTensors::DerivIIMComp() {
 //*********************************************************************************************************************************
 
 //Product of derivative of Diffusion tensor with Diffusion direction qk
-const double ELTensors::qpartialDq(double direction, std::vector<double> qk) {
+void ELTensors::qpartialDqfunc(std::vector<std::vector<double>> &xqpartialDqsum) {
 
-	double w1 = CellX[0][0][0][3];
-	double w2 = CellX[0][0][0][4];
-	double w3 = CellX[0][0][0][5];
-	double w4 = CellX[0][0][0][6];
-	double 	w5 = CellX[0][0][0][7];
-	double w6 = CellX[0][0][0][8];
+	xqpartialDqsum.resize(Eli.GradDirections, std::vector<double>(9));
 
-	if (direction == 4) {
-
-		double Dx1[3][3] = { { 1, w4, w5 }  ,
-		{ w4, w4*w4, w4*w5 },
-		{ w5, w4*w5, w5*w5 }
-		};
-
-		double qDqsum = 0;
-
+	for (int k = 0; k != Eli.GradDirections; k++) {
 		for (int i = 0; i != 3; ++i)
 		{
 			for (int j = 0; j != 3; j++)
 			{
-				qDqsum += qk[i] * Dx1[i][j] * qk[j];
+				xqpartialDqsum[k][3] += Eli(k, i) * Dx1[i][j] * Eli(k, j);
+				xqpartialDqsum[k][4] += Eli(k, i) * Dx2[i][j] * Eli(k, j);
+				xqpartialDqsum[k][5] += Eli(k, i) * Dx3[i][j] * Eli(k, j);
+				xqpartialDqsum[k][6] += Eli(k, i) * Dx4[i][j] * Eli(k, j);
+				xqpartialDqsum[k][7] += Eli(k, i) * Dx5[i][j] * Eli(k, j);
+				xqpartialDqsum[k][8] += Eli(k, i) * Dx6[i][j] * Eli(k, j);
 			}
 		}
 
-		return qDqsum;
 	}
-
-
-	else if (direction == 5) {
-
-		double Dx2[3][3] = { { 0,0,0 }  ,
-		{ 0,1,w6 },
-		{ 0, w6, w6*w6 } };
-
-		double qDqsum = 0;
-
-		for (int i = 0; i != 3; ++i)
-		{
-			for (int j = 0; j != 3; j++)
-			{
-				qDqsum += qk[i] * Dx2[i][j] * qk[j];
-			}
-		}
-
-		return qDqsum;
-
-	}
-
-
-	else if (direction == 6) {
-
-		double Dx3[3][3] = { { 0,0,0 }  ,
-		{ 0,0,0 },
-		{ 0,0,1 } };
-
-		double qDqsum = 0;
-
-		for (int i = 0; i != 3; ++i)
-		{
-			for (int j = 0; j != 3; j++)
-			{
-				qDqsum += qk[i] * Dx3[i][j] * qk[j];
-			}
-		}
-		return qDqsum;
-	}
-
-
-	else if (direction == 7) {
-
-		double Dx4[3][3] = { { 0, w4, 0 }  ,
-		{ w1, 2 * w1*w4, w1*w5 },
-		{ 0, w1*w5, 0 } };
-		double qDqsum = 0;
-
-		for (int i = 0; i != 3; ++i)
-		{
-			for (int j = 0; j != 3; j++)
-			{
-				qDqsum += qk[i] * Dx4[i][j] * qk[j];
-			}
-		}
-
-		return qDqsum;
-	}
-
-	else if (direction == 8) {
-
-		double Dx5[3][3] = { { 0,0,1 }  ,
-		{ 0,0,w1*w4 },
-		{ w1, w1*w4, 2 * w1*w5 } };
-		double qDqsum = 0;
-
-		for (int i = 0; i != 3; ++i)
-		{
-			for (int j = 0; j != 3; j++)
-			{
-				qDqsum += qk[i] * Dx5[i][j] * qk[j];
-			}
-		}
-		return qDqsum;
-
-	}
-
-	else if (direction == 9) {
-
-		double Dx6[3][3] = { { 0,0,0 }  ,
-		{ 0,0, w2 },
-		{ 0, w2, 2 * w2*w6 } };
-		double qDqsum = 0;
-
-		for (int i = 0; i != 3; ++i)
-		{
-			for (int j = 0; j != 3; j++)
-			{
-				qDqsum += qk[i] * Dx6[i][j] * qk[j];
-			}
-		}
-		return qDqsum;
-
-	}
-	else return 0;
 }

@@ -1,6 +1,6 @@
 /** \file  AhatInitializing.h
 \brief C++ source file initializing Ahat attenuation normalized by the zero diffusion weighting DWIs.
-Copyright 2016 by Andrew Colinet, Tomas Kojar,
+Copyright 2016 by Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
@@ -22,20 +22,18 @@ POSSIBILITY OF SUCH DAMAGE.
 */#include <vector>
 #include <algorithm>
 
-std::vector< std::vector<std::vector<std::vector<double>>> >   AhatInitializing(std::vector< std::vector<std::vector<std::vector<double>>> > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double Graddirections) {
+void  AhatInitializing(std::vector< std::vector<std::vector<std::vector<double>>> > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double Graddirections, std::vector< std::vector<std::vector<std::vector<double>>> > &Ahat) {
 
-	std::vector< std::vector<std::vector<std::vector<double>>> >  result(nuframesx, std::vector<std::vector<std::vector<double>>>(nuframesy, std::vector<std::vector<double>>(nuframesz, std::vector<double >(Graddirections))));
 	
-
 	for (int x = 0; x != nuframesx; ++x) {
 		
 		for (int y = 0; y != nuframesy; ++y) {
 			
-			for (int row = 0; row != nuframesz; ++row) {
+			for (int z = 0; z != nuframesz; ++z) {
 
 				for (int k = 0; k != Graddirections; ++k) {
 
-					result[x][y][row][k] = Aatten[x][y][row][k+1]/ (Aatten[x][y][row][0]);
+					Ahat[x][y][z][k] = Aatten[x][y][z][k+1]/ (5000*Aatten[x][y][z][0]);
 				}
 		
 			}
@@ -45,7 +43,7 @@ std::vector< std::vector<std::vector<std::vector<double>>> >   AhatInitializing(
 	}
 
 
-	return result;
+	
 }
 
 
