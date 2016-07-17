@@ -52,8 +52,8 @@ int main() {
 	//number of cells
 	const int nuframesxtemp = 102;
 	const int nuframesytemp = 102;
-	const int nuframesx = 102;
-	const int nuframesy = 102;
+	const int nuframesx = 3;
+	const int nuframesy = 3;
 	const int nuframesz = 60;
 	const int xGraddirections = 46;//Number of Gradient directions including the zero diffusion weight
 	const int Graddirections = 44;//Without the zero diffusion weight
