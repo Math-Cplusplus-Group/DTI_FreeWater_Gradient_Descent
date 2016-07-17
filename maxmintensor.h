@@ -1,6 +1,7 @@
 /** \file  maxmintensor.h
 \brief C++ header file for computing max and min elements of tensors.
-Copyright 2016 by Tomas Kojar
+
+Copyright 2016 by Andrew Colinet, Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
 that the following conditions are met:
