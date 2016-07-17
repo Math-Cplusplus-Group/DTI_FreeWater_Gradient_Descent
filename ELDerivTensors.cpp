@@ -1,5 +1,6 @@
 /** \file  ELDerivTensors.cpp
 \brief C++ source file initializing the derivatives of tensors.
+
 Copyright 2016 by Andrew Colinet,Tomas Kojar
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided
