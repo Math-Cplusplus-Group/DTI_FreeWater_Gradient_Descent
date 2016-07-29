@@ -25,13 +25,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <algorithm>
 
-std::vector<std::vector<std::vector<double>>>  meanoftensor(std::vector< std::vector<std::vector<std::vector<double>>> > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double directions) {
+std::vector<std::vector<std::vector<double> > >  meanoftensor(std::vector< std::vector<std::vector<std::vector<double> > > > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double directions) {
 
-	std::vector<std::vector<std::vector<double>>> result;
+	std::vector<std::vector<std::vector<double> > > result;
 	double sum = 0;
 
 	for (int x = 0; x != nuframesx; ++x) {
-		std::vector<std::vector<double>> rowset2;
+		std::vector<std::vector<double> > rowset2;
 		for (int y = 0; y != nuframesy; ++y) {
 			std::vector<double> rowset;
 			for (int row = 0; row != nuframesz; ++row) {

@@ -24,7 +24,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <algorithm>
 #include "ELInitialization.h"
-std::vector<std::vector<std::vector<double>>>  volumefraction(std::ofstream& myfile, std::vector< std::vector<std::vector<std::vector<double>>> > Aatten, ELInitialization Eli, std::vector<std::vector<std::vector<double>>> fmin, std::vector<std::vector<std::vector<double>>> fmax) {
+std::vector<std::vector<std::vector<double> > >  volumefraction(std::ofstream& myfile, std::vector< std::vector<std::vector<std::vector<double> > > > Aatten, ELInitialization Eli, std::vector<std::vector<std::vector<double> > > fmin, std::vector<std::vector<std::vector<double> > > fmax) {
 	
 	int nuframesx = Eli.nframesx;
 	int nuframesy = Eli.nframesy;
@@ -39,7 +39,7 @@ std::vector<std::vector<std::vector<double>>>  volumefraction(std::ofstream& myf
 	double Swat = Aatten[WTR[0]][WTR[1]][WTR[2]][0];
 	//myfile << Swat << ',' << Stis << '\n';
 
-	std::vector<std::vector<std::vector<double>>> result(std::vector<std::vector<std::vector<double>>>(nuframesx, std::vector<std::vector<double>>(nuframesy, std::vector<double >(nuframesz))));
+	std::vector<std::vector<std::vector<double> > > result(std::vector<std::vector<std::vector<double> > >(nuframesx, std::vector<std::vector<double> >(nuframesy, std::vector<double >(nuframesz))));
 	
 	double s=0;
 

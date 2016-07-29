@@ -25,7 +25,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <algorithm>
 #include "ELInitialization.h"
 
-std::vector< std::vector<std::vector<std::vector<double>>> >  Volfnminmax(std::ofstream& myfile, std::vector< std::vector<std::vector<std::vector<double>>> >  Ahat, ELInitialization Eli ) {
+std::vector< std::vector<std::vector<std::vector<double> > > >  Volfnminmax(std::ofstream& myfile, std::vector< std::vector<std::vector<std::vector<double> > > >  Ahat, ELInitialization Eli ) {
 	double minAhat ;
 	double maxAhat ;
 	double bval = Eli.bval;
@@ -37,7 +37,7 @@ std::vector< std::vector<std::vector<std::vector<double>>> >  Volfnminmax(std::o
 	int nuframesz= Eli.nframesz;
 	int Graddirections=Eli.GradDirections;
 
-	std::vector< std::vector<std::vector<std::vector<double>>> > result(2,std::vector<std::vector<std::vector<double>>>(nuframesx, std::vector<std::vector<double>>(nuframesy, std::vector<double >(nuframesz))));
+	std::vector< std::vector<std::vector<std::vector<double> > > > result(2,std::vector<std::vector<std::vector<double> > >(nuframesx, std::vector<std::vector<double> >(nuframesy, std::vector<double >(nuframesz))));
 	
 
 

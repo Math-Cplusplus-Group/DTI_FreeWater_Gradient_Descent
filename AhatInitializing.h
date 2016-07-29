@@ -23,7 +23,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */#include <vector>
 #include <algorithm>
 
-void  AhatInitializing(std::vector< std::vector<std::vector<std::vector<double>>> > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double Graddirections, std::vector< std::vector<std::vector<std::vector<double>>> > &Ahat) {
+void  AhatInitializing(std::vector< std::vector<std::vector<std::vector<double> > > > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double Graddirections, std::vector< std::vector<std::vector<std::vector<double> > > > &Ahat) {
 
 	
 	for (int x = 0; x != nuframesx; ++x) {

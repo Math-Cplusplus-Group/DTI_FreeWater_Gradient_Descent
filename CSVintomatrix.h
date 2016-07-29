@@ -26,7 +26,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <sstream>
 #include <string>
 
-std::vector<std::vector<double>> CSVintoMatrix(std::ifstream& file, const int Graddirections, std::vector<std::vector<double>> &data, const int colsize = 3) {
+std::vector<std::vector<double> > CSVintoMatrix(std::ifstream& file, const int Graddirections, std::vector<std::vector<double> > &data, const int colsize = 3) {
 
 	
 
@@ -51,7 +51,7 @@ std::vector<std::vector<double>> CSVintoMatrix(std::ifstream& file, const int Gr
 			//	break;
 
 			//		std::stringstream convertor(val);
-			//	convertor >> data[row][col];
+			//	convertor > > data[row][col];
 			double s = std::stod(val);
 			//std::cout << s;
 			rowset.push_back(s);

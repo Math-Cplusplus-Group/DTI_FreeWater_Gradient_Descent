@@ -1,5 +1,11 @@
 CC=g++
 
-output: main.o GameMaster.o Player.o Field.o Deck.o RandomPlayer.o LogWriter.o
-	$(CC) main.o GameMaster.o Player.o Field.o Deck.o RandomPlayer.o LogWriter.o -o output
+output: MainGradient.o ELTensors.o
+	$(CC) MainGradient.o ELTensors.o -o output
 	./output
+
+MainGradient.o: maxmintensor.h MainGradient.cpp EmbedInitial.h CSVinto4Darray.h CSVintomatrix.h CSVintoVector.h ELInitialization.h EmbedInitial.h Volumefraction.h Volfnminmax.h 
+	$(CC) -c maxmintensor.h MainGradient.cpp EmbedInitial.h CSVinto4Darray.h CSVintomatrix.h CSVintoVector.h ELInitialization.h EmbedInitial.h Volumefraction.h Volfnminmax.h 
+
+ELTensors.o: ELTensors.h ELTensors.cpp ELGradient.cpp ELDerivTensors.cpp
+	$(CC) -c ELTensors.h ELTensors.cpp ELGradient.cpp ELDerivTensors.cpp

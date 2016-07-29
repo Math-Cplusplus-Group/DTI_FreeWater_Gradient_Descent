@@ -108,11 +108,11 @@ public:
 	std::vector<double> hmatrix ;
 	
 	////Induced Pullback metric gamma
-	std::vector<std::vector<double>> IMmatrix;
+	std::vector<std::vector<double> > IMmatrix;
 
 
 	////Inverse of Induced Pullback metric gamma
-	std::vector<std::vector<double>> InvIMmatrix;
+	std::vector<std::vector<double> > InvIMmatrix;
 	
 	
 	///The exponent (q_k^T) * Diffusion matrix * (q_k)
@@ -128,7 +128,7 @@ public:
 											///Derivatives of tensors
 
 	////Derivative of embedding map X
-	std::vector<std::vector<double>> DerivX;
+	std::vector<std::vector<double> > DerivX;
 
 	////Double Derivative of embedding map X
 	std::vector<std::vector<std::vector<double> > > DDerivX;
@@ -162,7 +162,7 @@ public:
 
 
 	////Product of derivative of Diffusion tensor with Diffusion direction qk
-	std::vector<std::vector<double>> qpartialDqsum;
+	std::vector<std::vector<double> > qpartialDqsum;
 
 	////Derivative of determinant of induced pullback metric gamma
 	double detgamma_constant ;
@@ -170,7 +170,7 @@ public:
 	double sqrdetgamma = pow((detgamma_constant), -1 / 2);
 
 	////Derivative of induced metric gamma
-	std::vector<std::vector<std::vector<double>>> Derivgamma;
+	std::vector<std::vector<std::vector<double> > > Derivgamma;
 
 	///Derivative of determinant of induced metric
 	std::vector<double> derivdetgamma;
@@ -211,14 +211,14 @@ public:
 										//ELDerivTensors
 
 		////Derivative of embedding map X
-		void DerivXfunc(std::vector<std::vector<double>> &xDerivX);
+		void DerivXfunc(std::vector<std::vector<double> > &xDerivX);
 
 		////Double derivative of embedding map X
 		void DDerivXfunc(std::vector<std::vector<std::vector<double> > > &xDDerivX);
 
 
 		////Derivative of induced metric
-		void Derivgammafunc(std::vector<std::vector<std::vector<double>>> &xderivgamma);
+		void Derivgammafunc(std::vector<std::vector<std::vector<double> > > &xderivgamma);
 
 		///Derivative of determinant of induced metric
 		void Derivdetgammafunc(std::vector<double> &xderivdetgamma);
@@ -228,7 +228,7 @@ public:
 
 
 		/////Product of derivative of Diffusion tensor with Diffusion direction qk
-		void qpartialDqfunc(std::vector<std::vector<double>> &xqpartialDqsum);
+		void qpartialDqfunc(std::vector<std::vector<double> > &xqpartialDqsum);
 
 
 	

@@ -41,9 +41,9 @@ public:
 	int nframesz;
 	int GradDirections;
 	int bval;
-	std::vector< std::vector<std::vector<std::vector<double>>> > Aatten;
+	std::vector< std::vector<std::vector<std::vector<double> > > > Aatten;
 
-	std::vector<std::vector<double, std::allocator<double>>, std::allocator<std::vector<double, std::allocator<double>>>> DiffGradDir;
+	std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > DiffGradDir;
 
 	double alpha;
 	double Awater;
@@ -58,7 +58,7 @@ public:
 		int xnframesz,
 		int xGradDirections,
 		int xbval,
-		std::vector<std::vector<double, std::allocator<double>>, std::allocator<std::vector<double, std::allocator<double>>>> xDiffGradDir,
+		std::vector<std::vector<double, std::allocator<double> >, std::allocator<std::vector<double, std::allocator<double> > > > xDiffGradDir,
 		double xalpha,
 		double xAwater,
 		double xlmin,
