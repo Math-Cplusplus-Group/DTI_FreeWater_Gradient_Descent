@@ -196,3 +196,341 @@ void ELTensors::IIMmatrixfunc(std::vector<std::vector<double> > &xInvIMmatrix) {
 
 }
 
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+////Initializing the tensors and their derivatives for the EL equations
+
+void ELTensors::TensorsandDerivTensorsInitialization(){
+
+	///The order of calling the functions matters, since some of them depend on others
+
+
+								///Foundational Tensors not depending on other tensors
+	//Embedded metric h_ij
+	hmatrixfunc( hmatrix);
+
+	///Christoffel Symbols
+	CSIComp(ChrisSym);
+
+	//Diffusion tensor product with diffusion direction q: qDq
+	qDqfunc(qDqsum);
+	
+	/////Product of derivative of Diffusion tensor with Diffusion direction qk
+	qpartialDqfunc(qpartialDqsum);
+
+	////Derivative of embedding map X
+	DerivXfunc(DerivX);
+
+	////Double derivative of embedding map X
+	DDerivXfunc(DDerivX);
+
+	
+
+											////Tensors that depend on other tensors
+	
+	///entries of pullback metric gamma. It depends on DerivX.
+	IMmatrixfunc( IMmatrix);
+
+
+	////Induced Pullback metric gamma. It depends on IMmatrix.
+	detgammafunc( detgamma_constant);
+
+	
+	////Inverse of Induced metric gamma_nu,mu. It depends on IMmatrix and detgamma_constant.
+	 IIMmatrixfunc( InvIMmatrix);
+
+	 
+	 ////Derivative of induced metric. It depends on DerivX, DDerivX, hmatrix.
+	 Derivgammafunc(Derivgamma);
+	
+	 ///Derivative of determinant of induced metric. It depends on IMmatrix, detgamma_constant, Derivgamma.
+	 Derivdetgammafunc(derivdetgamma);
+
+	 ////Derivative of inverse of induced metric; only for the terms needed in the EL equation. It depends on InvIMmatrix, Derivgamma.
+	 DerivIIMComp(DerivIIM);
+
+
+
+
+
+
+}
+
+
+
+
+
+
+//Our EL eqns have three terms: 1)The sum involving the diffusion tensors , 
+const double ELTensors::term1Diff(int compon) {
+	double term1 = 0;
+	double bqDq = 0 ;
+
+	for (int k = 0; k != Eli.GradDirections; k++) {
+		bqDq = bval*qDqsum[k];
+		term1 += (alpha*bval / sqrdetgamma) *(Volfn*exp(-bqDq) + (1 - Volfn)* Awater - (this->Ahat[k]))* exp(-bqDq)* qpartialDqsum[k][compon];
+	}
+
+	return term1;
+
+}
+
+// 2)the partial derivatives of induced metric gamma with embedding map X and
+const double ELTensors::term2IX(int compon) {
+	double term2 = 0;
+	
+	
+	for (int mu = 0; mu != 3; ++mu) {
+		for (int nu = 0; nu != 3; ++nu) {
+		////std::cout << "53 ELG" << mu << nu << std::endl;
+			term2 += -(1 / (2 * detgamma_constant))*derivdetgamma[mu] * InvIMmatrix[mu][nu]*DerivX[nu][compon] + DerivIIM[mu][nu] * DerivX[nu][compon] + InvIMmatrix[mu][nu] * DDerivX[compon][mu][nu];
+			
+		}
+	}
+
+	return term2;
+
+}
+
+//3) the term involving the Christoffel symbols.
+const double ELTensors::term3CS(int direction) {
+
+	double term3 = 0;
+		
+	for (int mu = 0; mu != 3; mu++) {
+		for (int nu = 0; nu != 3; nu++) {
+			for (int j = 3; j != 9; j++) {
+				for (int k = 3; k != 9; k++) {
+
+					term3 += ChrisSym[direction][j][k]*InvIMmatrix[mu][nu] * DerivX[mu][j] * DerivX[nu][direction];
+
+	///myfile << "term3"<< term3 <<','<<"IIMcomp"<< IIMComp[mu][nu] <<','<< partialX[mu][j]<< ','<< partialX[nu][direction] << '\n';
+				}
+			}
+		}
+	}
+
+	return term3;
+}
+
+
+//We will compute them separately and then add them for the EL scheme
+const double ELTensors::ELequation(int direction) {
+	
+	return term1Diff(direction)+ term2IX(direction) + term3CS(direction);
+
+}
+
+//The iteration rule for the volume fraction
+const double ELTensors::VolfraIter()
+{	
+	double volfraiter = 0;
+	double bqDq = 0;
+	
+	for (int k = 0; k != Eli.GradDirections; k++)
+	{	
+		 bqDq = bval*qDqsum[k];
+		volfraiter += -bval*(Volfn*exp(-bqDq) + (1 - Volfn)* Awater - Ahat[k])*(exp(-bqDq) - Awater);
+	}
+
+	return volfraiter;
+
+}
+
+
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+
+
+//Derivative of embedding map X
+void ELTensors::DerivXfunc(std::vector<std::vector<double> > &xDerivX) {
+
+	xDerivX.resize(3, std::vector<double>(9));
+	xDerivX[0][0] = 1; xDerivX[0][1] = 0; xDerivX[0][2] = 0;
+	for (int i = 3; i != 9; ++i) {
+		xDerivX[0][i] = (1 / dx)* (CellX[1][0][0][i] - CellX[0][0][0][i]);
+	}
+
+	xDerivX[1][0] = 0; xDerivX[1][1] = 1; xDerivX[1][2] = 0;
+	for (int i = 3; i != 9; ++i) {
+		xDerivX[1][i] = (1 / dx)* (CellX[0][1][0][i] - CellX[0][0][0][i]);
+	}
+
+	xDerivX[2][0] = 0; xDerivX[0][1] = 0; xDerivX[0][2] = 1;
+	for (int i = 3; i != 9; ++i) {
+		xDerivX[2][i] = (1 / dx)* (CellX[0][0][1][i] - CellX[0][0][0][i]);
+	}
+	
+
+}
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//Double derivative of embedding map X
+
+void ELTensors::DDerivXfunc(std::vector<std::vector<std::vector<double> > > &xDDerivX) {
+
+	xDDerivX.resize(9, std::vector<std::vector<double> >(3, std::vector<double>  (3)));
+
+	for (int i = 3; i != 9; ++i) {
+		xDDerivX[i][0][0] = (1 / dx*dx)* (CellX[1][0][0][i] + CellX[2][0][0][i] - 2 * CellX[0][0][0][i]);
+	
+		xDDerivX[i][1][1] = (1 / dy*dy)* (CellX[0][1][0][i] + CellX[0][2][0][i] - 2 * CellX[0][0][0][i]);
+	
+		xDDerivX[i][2][2] = (1 / dz*dz)* (CellX[0][0][1][i] + CellX[0][0][2][i] - 2 * CellX[0][0][0][i]);
+	
+		xDDerivX[i][0][1] = (1 / dx*dy)* (CellX[1][1][0][i] - CellX[1][2][0][i] - CellX[2][1][0][i] + CellX[2][2][0][i]);
+		xDDerivX[i][1][0] = xDDerivX[i][0][1];
+		xDDerivX[i][0][2] = (1 / dx*dz)* (CellX[1][0][1][i] - CellX[1][0][2][i] - CellX[2][0][1][i] + CellX[2][0][2][i]);
+		xDDerivX[i][2][0] = xDDerivX[i][0][2];
+	
+		xDDerivX[i][1][2] = (1 / dy*dz)* (CellX[0][1][1][i] - CellX[0][2][1][i] - CellX[0][1][2][i] + CellX[0][2][2][i]);
+		xDDerivX[i][2][1] = xDDerivX[i][1][2];
+	}
+	
+
+}
+
+
+//********************************************************************************************************************************************
+//********************************************************************************************************************************************
+
+//Derivative of induced metric gamma
+void ELTensors::Derivgammafunc(std::vector<std::vector<std::vector<double> > > &xDerivgamma) {
+	
+	xDerivgamma.resize(3, std::vector<std::vector<double> >(3, std::vector<double>(3)));
+
+	std::vector<double> derivhmetric;
+
+	for (int coord = 0; coord != 3; ++coord) {
+		
+		//derivative of induced metric
+		derivhmetric.push_back(0);
+		derivhmetric.push_back(0);
+		derivhmetric.push_back(0);
+		derivhmetric.push_back(-2 * DerivX[coord][3] / (w1 * w1 * w1));
+		derivhmetric.push_back(-2 * DerivX[coord][4] / (w2 * w2 * w2));
+		derivhmetric.push_back(-2 * DerivX[coord][5] / (w3 * w3 * w3));
+		derivhmetric.push_back(2 * (DerivX[coord][3] * (w3 + w2 * w6 * w6)*w2 * w3 + w1 * (DerivX[coord][5] + DerivX[coord][4] * w6 * w6 + 2 * w2 * w6 * DerivX[coord][8])*w2 * w3 - w1 * (w3 + w2 * w6 * w6)*(DerivX[coord][4] * w3 + w2 * DerivX[coord][5])) / (w2 * w2 * w3 * w3));
+		derivhmetric.push_back(2 * (DerivX[coord][3] * w3 - w1 * DerivX[coord][5]) / (w3 * w3));
+		derivhmetric.push_back(2 * (DerivX[coord][4] * w3 - w2 * DerivX[coord][5]) / (w3 * w3));
+		derivhmetric.push_back(-2 * (DerivX[coord][3] * w6 * w2 + w1 * DerivX[coord][8] * w2 - w2 * w6 * DerivX[coord][4]) / (w3 * w3));
+
+
+
+		for (int rowentries = 0; rowentries != 3; ++rowentries) {
+			for (int colentries = 0; colentries != 3; ++colentries) {
+				
+				for (int i = 0; i != 9; ++i) {
+
+					//the cross terms
+					xDerivgamma[coord][rowentries][colentries] =	DDerivX[6][coord][rowentries] * DerivX[colentries][7] * hmatrix[8] + DerivX[rowentries][6] * DDerivX[7][coord][colentries] * hmatrix[8] + DerivX[rowentries][6] * DerivX[colentries][7] * derivhmetric[8] +
+
+					DDerivX[7][coord][rowentries] * DerivX[colentries][6] * hmatrix[8] + DerivX[rowentries][7] * DDerivX[6][coord][colentries] * hmatrix[8] + DerivX[rowentries][7] * DerivX[colentries][6] * derivhmetric[8];
+
+					//summing over the diagonal terms
+					xDerivgamma[coord][rowentries][colentries] += DDerivX[i][coord][rowentries] * DerivX[colentries][i] * hmatrix[i] + DerivX[rowentries][i] * DDerivX[i][coord][colentries] * hmatrix[i] + DerivX[rowentries][i] * DerivX[colentries][i] * derivhmetric[i];
+				}
+			}
+		}
+
+	
+	}
+
+
+
+}
+
+
+//Derivative of determinant of induced metric gamma
+void ELTensors::Derivdetgammafunc(std::vector<double> &xderivdetgamma) {
+
+	xderivdetgamma.resize(3);
+
+	//computing the derivative of the deriminant using Jacobi's formula (detA)'=detA* tr( A^(-1) * (A)' )	
+	for (int direction = 0; direction != 3; direction++) {
+		for (int i1 = 0; i1 != 3; i1++) {
+			for (int i2 = 0; i2 != 3; i2++)
+			{
+				xderivdetgamma[direction] += (detgamma_constant)* IMmatrix[i1][i2] * Derivgamma[direction][i2][i1];
+			}
+		}
+	}
+}
+
+
+
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//Derivative of inverse of induced metric gamma_nu,mu
+void ELTensors::DerivIIMComp(std::vector<std::vector<double> > &xderivIIM) {
+
+
+	xderivIIM.resize(3, std::vector<double>(3));
+
+	//computing derivative of inverse using formula (A^-1)'=-(A^-1)* ( (A)' )* (A^-1)
+		
+	for (int coord = 0; coord != 3; ++coord) {
+		for (int nu = 0; nu != 3; ++nu) {
+			for (int i1 = 0; i1 != 3; ++i1) {
+				for (int i2 = 0; i2 != 3; ++i2)
+				{
+
+					////std::cout << "line185 ELDer" << coord << " " << nu <<  i1<< i2<< std::endl;
+					xderivIIM[coord][nu] -= InvIMmatrix[coord][i1] * Derivgamma[coord][i1][i2] * InvIMmatrix[i2][nu];
+
+				}
+			}
+		}
+	}
+
+
+
+
+}
+
+
+//*********************************************************************************************************************************
+//*********************************************************************************************************************************
+
+//Product of derivative of Diffusion tensor with Diffusion direction qk
+void ELTensors::qpartialDqfunc(std::vector<std::vector<double> > &xqpartialDqsum) {
+
+	xqpartialDqsum.resize(Eli.GradDirections, std::vector<double>(9));
+
+	for (int k = 0; k != Eli.GradDirections; k++) {
+		for (int i = 0; i != 3; ++i)
+		{
+			for (int j = 0; j != 3; j++)
+			{
+				xqpartialDqsum[k][3] += Eli(k, i) * Dx1[i][j] * Eli(k, j);
+				xqpartialDqsum[k][4] += Eli(k, i) * Dx2[i][j] * Eli(k, j);
+				xqpartialDqsum[k][5] += Eli(k, i) * Dx3[i][j] * Eli(k, j);
+				xqpartialDqsum[k][6] += Eli(k, i) * Dx4[i][j] * Eli(k, j);
+				xqpartialDqsum[k][7] += Eli(k, i) * Dx5[i][j] * Eli(k, j);
+				xqpartialDqsum[k][8] += Eli(k, i) * Dx6[i][j] * Eli(k, j);
+			}
+		}
+
+	}
+}
+
+
+

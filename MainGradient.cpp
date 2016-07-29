@@ -237,7 +237,7 @@ int main() {
 					std::cout << "ln 225: Cell Initialization worked" ;
 
 /// Object initialization
-ELTensors	XandDX(CellX, dx, dy, dz, Volfn[x][y][z], Eli, Ahat[x][y][z], myfile);
+ELTensors XandDX(CellX, dx, dy, dz, Volfn[x][y][z], Eli, Ahat[x][y][z], myfile);
 //std::cout << "Object initialization worked." << std::endl;
 			
 ///Initializing all the tensors and their derivatives
