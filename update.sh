@@ -2,17 +2,16 @@
 
 clear
 echo "stagig ..."
-echo git add --all
+git add --all
 
 echo "checking the status:"
-echo git status
+git status
 
 echo "Do you want to proceed pushing the changes?"
 read answer
 
-if [ answer = "y" ]; then
-	echo "commit ..."
-	echo git commit -m \"update\"
-	echo "pushing to master"
-	echo git push origin master
-fi
+echo "commit ..."
+git commit -m \"update\"
+echo "pushing to master"
+git push origin master
+echo "successfully updated the repository!"
