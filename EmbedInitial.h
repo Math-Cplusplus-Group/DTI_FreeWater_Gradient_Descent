@@ -24,17 +24,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "ELInitialization.h"
-#include <Eigen/Dense>
+#include "Eigen/Dense"
 
 using namespace std;
 using namespace Eigen;
 
-void Embedinitial(std::ofstream& myfile, std::vector<std::vector<double>> DiffGradDir, std::vector< std::vector<std::vector<std::vector<double>>> > Ahat, ELInitialization Eli, std::vector<std::vector<std::vector<double>>> volfn, std::vector< std::vector<std::vector<std::vector<double>>> > &embeddingmapXn){
+void Embedinitial(std::ofstream& myfile, std::vector<std::vector<double> > DiffGradDir, std::vector< std::vector<std::vector<std::vector<double> > > > Ahat, ELInitialization Eli, std::vector<std::vector<std::vector<double> > > volfn, std::vector< std::vector<std::vector<std::vector<double> > > > &embeddingmapXn){
 		
 	
 	double Abitensor = 0;
 
-	 embeddingmapXn.resize(9, std::vector<std::vector<std::vector<double> > >(Eli.nframesx, std::vector<std::vector<double>>(Eli.nframesy, std::vector<double >(Eli.nframesz))));
+	 embeddingmapXn.resize(9, std::vector<std::vector<std::vector<double> > >(Eli.nframesx, std::vector<std::vector<double> >(Eli.nframesy, std::vector<double >(Eli.nframesz))));
 	
 	 ////To use Least squares we express the 3x3 Diffusion matrix D for fixed x,y,z  as a 6-size vector (onlny 6 terms due to D's symmetry)
 	
@@ -44,7 +44,7 @@ void Embedinitial(std::ofstream& myfile, std::vector<std::vector<double>> DiffGr
 
 
 
-	//std::vector<std::vector<double>> Mcoeff(Eli.GradDirections, std::vector<double>(6));
+	//std::vector<std::vector<double> > Mcoeff(Eli.GradDirections, std::vector<double>(6));
 	MatrixXf Mcoeff(Eli.GradDirections,6);
 	VectorXf Ytiss(Eli.GradDirections);
 

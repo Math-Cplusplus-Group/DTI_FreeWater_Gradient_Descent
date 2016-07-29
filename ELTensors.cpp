@@ -29,8 +29,19 @@ POSSIBILITY OF SUCH DAMAGE.
 void ELTensors::hmatrixfunc(std::vector<double> &xhmatrix) {
 	
 	//the induced metric h where the last entry is the cross term h_78=h_87
-	 xhmatrix = { 1,1,1, 1 / (w1 * w1),1 / (w2 * w2),1 / (w3 * w3), 2 * w1 * (w3 + w2 * w6 * w6) / (w2 * w3),2 * w1 / w3,  2 * w2 / w3,-2 * w1 * w6 / w3 };
+	xhmatrix.push_back(1);
+	xhmatrix.push_back(1);
+	xhmatrix.push_back(1);
+       	xhmatrix.push_back(1 / (w1 * w1));
+	xhmatrix.push_back(1 / (w2 * w2));
+	xhmatrix.push_back(1 / (w3 * w3));
+       	xhmatrix.push_back(2 * w1 * (w3 + w2 * w6 * w6) / (w2 * w3));
+	xhmatrix.push_back(2 * w1 / w3);
+      	xhmatrix.push_back(2 * w2 / w3);
+	xhmatrix.push_back(-2 * w1 * w6 / w3);
+	
 }
+
 
 
 

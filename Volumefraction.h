@@ -24,7 +24,11 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <algorithm>
 #include "ELInitialization.h"
-std::vector<std::vector<std::vector<double> > >  volumefraction(std::ofstream& myfile, std::vector< std::vector<std::vector<std::vector<double> > > > Aatten, ELInitialization Eli, std::vector<std::vector<std::vector<double> > > fmin, std::vector<std::vector<std::vector<double> > > fmax) {
+
+using namespace std;
+
+
+vector<vector<vector<double> > >  volumefraction( ofstream& myfile, vector<vector<vector<vector<double> > > > Aatten, ELInitialization Eli, std::vector<std::vector<std::vector<double> > > fmin, std::vector<std::vector<std::vector<double> > > fmax) {
 	
 	int nuframesx = Eli.nframesx;
 	int nuframesy = Eli.nframesy;
@@ -50,12 +54,12 @@ std::vector<std::vector<std::vector<double> > >  volumefraction(std::ofstream& m
 			for (int z = 0; z != nuframesz; ++z) {
 
 				s= 1 - log(Aatten[x][y][z][0] / Stis) / log(Swat / Stis);
-				myfile << '\n' << "Volfn before" << ',' << s;
+				// myfile << '\n' << "Volfn before" << ',' << s;
 				
 				if (s<=fmin[x][y][z] || s>=fmax[x][y][z]) { result[x][y][z] = (fmin[x][y][z] + fmin[x][y][z])*0.5; }
 				else{ result[x][y][z] = 1 - log(Aatten[x][y][z][0] / Stis) / log(Swat / Stis); }
 
-				myfile << '\n' << "Volfn" << ','<<result[x][y][z] <<"fmin"<<','<< fmin[x][y][z]<<','<< "fmax" << ',' << fmax[x][y][z]<<','<<"xyz"<<','<<x<<y<<z;
+				// myfile << '\n' << "Volfn" << ','<<result[x][y][z] <<"fmin"<<','<< fmin[x][y][z]<<','<< "fmax" << ',' << fmax[x][y][z]<<','<<"xyz"<<','<<x<<y<<z;
 								
 			}
 		}

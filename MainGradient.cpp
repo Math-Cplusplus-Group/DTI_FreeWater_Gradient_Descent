@@ -61,15 +61,22 @@ int main() {
 	//coordinates of voxel in deep White Matter (for initialization)
 	//std::vector<int> WM { (int)(nuframesxtemp/2),(int)(nuframesytemp/2),(int)(nuframesz/2) };
 
-	std::vector<int> WM{ 2,2,40};
+	std::vector<int> WM;
+	WM.push_back(2);
+	WM.push_back(2);
+	WM.push_back(40);
+
 	//coordinates of voxel with only free water(for initialization). Arbitrarily removed 3 points to be close to the boundary of brain.
-	std::vector<int> WTR{ 2,2,50} ;
+	std::vector<int> WTR;
+	WTR.push_back(2);
+	WTR.push_back(2);
+	WTR.push_back(50);
 
 	std::cout << "line 39 "<<'\n';
 	//Initializing DTI data
 	std::ifstream mydtifile("DTI4Ddataset.csv");
 
-	std::vector< std::vector<std::vector<std::vector<double>>> > Aatten(nuframesx, std::vector<std::vector<std::vector<double> > >(nuframesy, std::vector<std::vector<double>>(nuframesz, std::vector<double >(xGraddirections))));
+	std::vector< std::vector<std::vector<std::vector<double> > > > Aatten(nuframesx, std::vector<std::vector<std::vector<double> > >(nuframesy, std::vector<std::vector<double> >(nuframesz, std::vector<double >(xGraddirections))));
 	CSVinto4Darray(mydtifile, nuframesx, nuframesy, nuframesz, xGraddirections, Aatten);
 	
 	std::cout << WM[0] << WM[1]<<WM[2]<< '\n';
@@ -77,7 +84,7 @@ int main() {
 	
 	//Diffusion gradient Graddirections where the zero diffusion weight row vector was removed from the dataset
 	std::ifstream mybvecfile("bvec2DTI30.csv");
-	std::vector<std::vector<double>> DiffGradDir;
+	std::vector<std::vector<double> > DiffGradDir;
 	CSVintoMatrix(mybvecfile, Graddirections, DiffGradDir);
 	std::cout << "line 47" << '\n';
 	
@@ -99,39 +106,39 @@ int main() {
 	double T = 5;
 														
 	//Attenuation vector at x,y,z with all Graddirections
-	std::vector< std::vector<std::vector<std::vector<double>>> > Ahat(nuframesx, std::vector<std::vector<std::vector<double>>>(nuframesy, std::vector<std::vector<double>>(nuframesz, std::vector<double >(Graddirections))));
+	std::vector< std::vector<std::vector<std::vector<double> > > > Ahat(nuframesx, std::vector<std::vector<std::vector<double> > >(nuframesy, std::vector<std::vector<double> >(nuframesz, std::vector<double >(Graddirections))));
 	AhatInitializing(Aatten, nuframesx, nuframesy, nuframesz, Graddirections, Ahat);
 	
 	std::cout << "line 72 " << '\n';
 												//Volume Fraction initialization and min, max
 	
 	//mean over different diffusion Graddirections
-	//std::vector<std::vector<std::vector<double>>> Amean = meanoftensor(Aatten, nuframesx, nuframesy, nuframesz, Graddirections);
+	//std::vector<std::vector<std::vector<double> > > Amean = meanoftensor(Aatten, nuframesx, nuframesy, nuframesz, Graddirections);
 		
 	
-	std::vector<std::vector<std::vector<std::vector<double>>>> volfnminmax = Volfnminmax(myfile,Ahat, Eli );
-	std::vector<std::vector<std::vector<double>>> fmin = volfnminmax[0];
-	std::vector<std::vector<std::vector<double>>> fmax = volfnminmax[1];
+	std::vector<std::vector<std::vector<std::vector<double> > > > volfnminmax = Volfnminmax(myfile,Ahat, Eli );
+	std::vector<std::vector<std::vector<double> > > fmin = volfnminmax[0];
+	std::vector<std::vector<std::vector<double> > > fmax = volfnminmax[1];
 	std::cout << "line 82" << '\n';
 
 	//Volume fraction at time t_n
-	std::vector<std::vector<std::vector<double>>> Volfn = volumefraction(myfile,Aatten, Eli,fmin, fmax);
+	std::vector<std::vector<std::vector<double> > > Volfn = volumefraction(myfile,Aatten, Eli,fmin, fmax);
 	
 	//Volume fraction at time t_n+1
-	std::vector<std::vector<std::vector<double>>> Volfnplus1 = Volfn;
+	std::vector<std::vector<std::vector<double> > > Volfnplus1 = Volfn;
 
 																//Embedding map info
 
 	//unit-Cell centered at X(x,y,z)
-	std::vector<std::vector<std::vector<std::vector<double>>>> CellX(3, std::vector<std::vector<std::vector<double>>>(3, std::vector<std::vector<double>>(3, std::vector<double >(9, 0))));
+	std::vector<std::vector<std::vector<std::vector<double> > > > CellX(3, std::vector<std::vector<std::vector<double> > >(3, std::vector<std::vector<double> >(3, std::vector<double >(9, 0))));
 	std::cout << "line 93" << '\n';
 	
 	//First coordinate is the X^i and the other three are x,y,z respectively for time t_n
-	std::vector< std::vector<std::vector<std::vector<double>>> > embeddingmapXn;
+	std::vector< std::vector<std::vector<std::vector<double> > > > embeddingmapXn;
 	Embedinitial(myfile, DiffGradDir, Ahat, Eli, Volfn, embeddingmapXn);
 	std::cout << "line 96" << '\n';
 	//First coordinate is the X^i and the other three are x,y,z respectively for time t_n+1
-	std::vector< std::vector<std::vector<std::vector<double>>> > embeddingmapXnplus1(9, std::vector<std::vector<std::vector<double>>>(nuframesx, std::vector<std::vector<double>>(nuframesy, std::vector<double >(nuframesz))));
+	std::vector< std::vector<std::vector<std::vector<double> > > > embeddingmapXnplus1(9, std::vector<std::vector<std::vector<double> > >(nuframesx, std::vector<std::vector<double> >(nuframesy, std::vector<double >(nuframesz))));
 
 	std::cout << "done before iteration";
 
@@ -278,7 +285,7 @@ Volfn[x][y][z] = std::min(std::max(Volfnplus1[x][y][z], fmin[x][y][z]), fmax[x][
 	std::ofstream myfile2("DTIresults.csv");
 	//Creating diffusion tensor and printing it
 
-	std::vector<std::vector< std::vector<std::vector<std::vector<double>>> >> DiffusionTensor;
+	std::vector<std::vector< std::vector<std::vector<std::vector<double> > > > > DiffusionTensor;
 
 	myfile << "(x,y,z)" << ',' << "Volume Fraction" << ',' << "Elements of Diffusion Tensor" << "\n";
 
@@ -287,7 +294,7 @@ Volfn[x][y][z] = std::min(std::max(Volfnplus1[x][y][z], fmin[x][y][z]), fmax[x][
 	for (int x = 0; x != nuframesx; x++) {
 		for (int y = 0; y != nuframesy; y++) {
 			for (int z = 0; z != nuframesz; z++) {
-				std::vector<std::vector<double>> DiffusionTensorxyz(3, std::vector<double>(3));
+				std::vector<std::vector<double> > DiffusionTensorxyz(3, std::vector<double>(3));
 
 				DiffusionTensorxyz[0][0] = embeddingmapXnplus1[3][x][y][z];
 				DiffusionTensorxyz[1][1] = embeddingmapXnplus1[4][x][y][z] + embeddingmapXnplus1[3][x][y][z] * embeddingmapXnplus1[6][x][y][z] * embeddingmapXnplus1[6][x][y][z];

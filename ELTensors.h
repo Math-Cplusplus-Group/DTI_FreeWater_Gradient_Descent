@@ -190,7 +190,7 @@ public:
 	void hmatrixfunc(std::vector<double> &xhmatrix);   
 
 	//Diffusion tensor product with diffusion direction q: qDq
-	void qDqfunc(std::vector<double> &xqDqsum);
+	void qDqfunc(std::vector<double> &qDqsum);
 
 	///entries of pullback metric gamma
 	void IMmatrixfunc(std::vector<std::vector<double> > &ximmatrix);

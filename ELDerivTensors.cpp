@@ -26,7 +26,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "ELInitialization.h"
 
 //Derivative of embedding map X
-void ELTensors::DerivXfunc(std::vector<std::vector<double>> &xDerivX) {
+void ELTensors::DerivXfunc(std::vector<std::vector<double> > &xDerivX) {
 
 	xDerivX.resize(3, std::vector<double>(9));
 	xDerivX[0][0] = 1; xDerivX[0][1] = 0; xDerivX[0][2] = 0;
@@ -80,27 +80,25 @@ void ELTensors::DDerivXfunc(std::vector<std::vector<std::vector<double> > > &xDD
 //********************************************************************************************************************************************
 
 //Derivative of induced metric gamma
-void ELTensors::Derivgammafunc(std::vector<std::vector<std::vector<double>>> &xDerivgamma) {
+void ELTensors::Derivgammafunc(std::vector<std::vector<std::vector<double> > > &xDerivgamma) {
 	
-	xDerivgamma.resize(3, std::vector<std::vector<double>>(3, std::vector<double>(3)));
+	xDerivgamma.resize(3, std::vector<std::vector<double> >(3, std::vector<double>(3)));
 
 	std::vector<double> derivhmetric;
 
 	for (int coord = 0; coord != 3; ++coord) {
 		
 		//derivative of induced metric
-		derivhmetric = {
-			0,
-			0,
-			0,
-			-2 * DerivX[coord][3] / (w1 * w1 * w1),
-			-2 * DerivX[coord][4] / (w2 * w2 * w2),
-			-2 * DerivX[coord][5] / (w3 * w3 * w3),
-			2 * (DerivX[coord][3] * (w3 + w2 * w6 * w6)*w2 * w3 + w1 * (DerivX[coord][5] + DerivX[coord][4] * w6 * w6 + 2 * w2 * w6 * DerivX[coord][8])*w2 * w3 - w1 * (w3 + w2 * w6 * w6)*(DerivX[coord][4] * w3 + w2 * DerivX[coord][5])) / (w2 * w2 * w3 * w3),
-			2 * (DerivX[coord][3] * w3 - w1 * DerivX[coord][5]) / (w3 * w3),
-			2 * (DerivX[coord][4] * w3 - w2 * DerivX[coord][5]) / (w3 * w3),
-			-2 * (DerivX[coord][3] * w6 * w2 + w1 * DerivX[coord][8] * w2 - w2 * w6 * DerivX[coord][4]) / (w3 * w3)
-		};
+		derivhmetric.push_back(0);
+		derivhmetric.push_back(0);
+		derivhmetric.push_back(0);
+		derivhmetric.push_back(-2 * DerivX[coord][3] / (w1 * w1 * w1));
+		derivhmetric.push_back(-2 * DerivX[coord][4] / (w2 * w2 * w2));
+		derivhmetric.push_back(-2 * DerivX[coord][5] / (w3 * w3 * w3));
+		derivhmetric.push_back(2 * (DerivX[coord][3] * (w3 + w2 * w6 * w6)*w2 * w3 + w1 * (DerivX[coord][5] + DerivX[coord][4] * w6 * w6 + 2 * w2 * w6 * DerivX[coord][8])*w2 * w3 - w1 * (w3 + w2 * w6 * w6)*(DerivX[coord][4] * w3 + w2 * DerivX[coord][5])) / (w2 * w2 * w3 * w3));
+		derivhmetric.push_back(2 * (DerivX[coord][3] * w3 - w1 * DerivX[coord][5]) / (w3 * w3));
+		derivhmetric.push_back(2 * (DerivX[coord][4] * w3 - w2 * DerivX[coord][5]) / (w3 * w3));
+		derivhmetric.push_back(-2 * (DerivX[coord][3] * w6 * w2 + w1 * DerivX[coord][8] * w2 - w2 * w6 * DerivX[coord][4]) / (w3 * w3));
 
 
 
@@ -182,7 +180,7 @@ void ELTensors::DerivIIMComp(std::vector<std::vector<double> > &xderivIIM) {
 //*********************************************************************************************************************************
 
 //Product of derivative of Diffusion tensor with Diffusion direction qk
-void ELTensors::qpartialDqfunc(std::vector<std::vector<double>> &xqpartialDqsum) {
+void ELTensors::qpartialDqfunc(std::vector<std::vector<double> > &xqpartialDqsum) {
 
 	xqpartialDqsum.resize(Eli.GradDirections, std::vector<double>(9));
 

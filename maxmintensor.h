@@ -22,7 +22,10 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-std::vector<double> maxmintensor(std::vector< std::vector<std::vector<std::vector<double> > > > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double directions) {
+#include <vector>
+using namespace std;
+
+vector<double> maxmintensor(std::vector< std::vector<std::vector<std::vector<double> > > > Aatten, const int nuframesx, const int nuframesy, const int nuframesz, double directions) {
 
 	double maximum = 0;
 	double minimum = 0;
